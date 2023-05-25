@@ -769,6 +769,9 @@ int background_varconst_of_z(
                              double* alpha,
                              double* me
                              ){
+  
+  int last_index=0;
+  double logz;
 
   switch(pba->varconst_dep){
 
@@ -787,6 +790,40 @@ int background_varconst_of_z(
       *me = 1.;
     }
     break;
+
+  case varconst_readfile:
+
+    logz = log(1.+z);
+
+    // interpolate spline
+    class_call(array_interpolate_spline(pba->varconst_file_logz,
+                                        pba->varconst_file_z_size,
+                                        pba->varconst_file_me,
+                                        pba->varconst_file_me_spline,
+                                        1,
+                                        logz,
+                                        &last_index,
+                                        alpha,
+                                        1,
+                                        pba->error_message),
+               pba->error_message,
+               pba->error_message);
+
+    class_call(array_interpolate_spline(pba->varconst_file_logz,
+                                        pba->varconst_file_z_size,
+                                        pba->varconst_file_me,
+                                        pba->varconst_file_me_spline,
+                                        1,
+                                        logz,
+                                        &last_index,
+                                        me,
+                                        1,
+                                        pba->error_message),
+                pba->error_message,
+                pba->error_message);
+    
+    break;
+    
 
     /* Implement here your arbitrary model of varying fundamental constants! */
   }
@@ -814,6 +851,84 @@ int background_init(
     printf("Running CLASS version %s\n",_VERSION_);
     printf("Computing background\n");
   }
+
+
+
+  /* - init varconst readfile. Read the file and spline it */
+  if (pba->varconst_dep == varconst_readfile){
+
+    printf("Initializing variation of fundamental constants from file %s\n",pba->varconst_filename);
+
+    // read lines from data.txt
+    FILE *file;
+    char line[100];
+    int i;
+    int nlines = 0;
+    double zmin;
+    double zmax;
+
+    file = fopen(pba->varconst_filename,"r");
+    if (file == NULL){
+      class_stop(pba->error_message,"Could not open file %s\n",pba->varconst_filename);
+    }
+    while (fgets(line, sizeof(line), file) != NULL){
+      nlines++;
+    }
+
+    printf("Found %d lines in file %s\n",nlines,pba->varconst_filename);
+
+    rewind(file);
+
+    class_alloc(pba->varconst_file_logz,nlines*sizeof(double),pba->error_message);
+    class_alloc(pba->varconst_file_alpha,nlines*sizeof(double),pba->error_message);
+    class_alloc(pba->varconst_file_me,nlines*sizeof(double),pba->error_message);
+    class_alloc(pba->varconst_file_alpha_spline,nlines*sizeof(double),pba->error_message);
+    class_alloc(pba->varconst_file_me_spline,nlines*sizeof(double),pba->error_message);
+    printf("Found %d lines in file %s\n",nlines,pba->varconst_filename);
+
+    i = 0;
+    while (fgets(line, sizeof(line), file) != NULL){
+      sscanf(line,"%lf %lf %lf",&pba->varconst_file_logz[i],&pba->varconst_file_alpha[i],&pba->varconst_file_me[i]);
+      pba->varconst_file_logz[i] = log(1.+pba->varconst_file_logz[i]);
+      printf("z = %e, alpha = %e, me = %e\n",pba->varconst_file_logz[i],pba->varconst_file_alpha[i],pba->varconst_file_me[i]);
+      i++;
+
+    }
+    fclose(file);
+
+    class_call(array_spline_table_lines(pba->varconst_file_logz,
+                                        nlines,
+                                        pba->varconst_file_alpha,
+                                        1,
+                                        pba->varconst_file_alpha_spline,
+                                        _SPLINE_EST_DERIV_,
+                                        pba->error_message),
+               pba->error_message,
+               pba->error_message);
+    class_call(array_spline_table_lines(pba->varconst_file_logz,
+                                        nlines,
+                                        pba->varconst_file_me,
+                                        1,
+                                        pba->varconst_file_me_spline,
+                                        _SPLINE_EST_DERIV_,
+                                        pba->error_message),
+                pba->error_message,
+                pba->error_message);
+
+    pba->varconst_file_z_size = nlines;
+
+    zmin = pba->varconst_file_logz[0];
+    zmax = pba->varconst_file_logz[nlines-1];
+
+    if (pba->background_verbose > 0){
+      printf("Read file %s with %d lines\n",pba->varconst_filename,nlines);
+      printf("zmin = %e, zmax = %e\n",zmin,zmax);
+    }
+
+    printf("Done initializing variation of fundamental constants from file %s\n",pba->varconst_filename);
+  }
+
+
 
   /** - if shooting failed during input, catch the error here */
   class_test(pba->shooting_failed == _TRUE_,

@@ -21,7 +21,7 @@ enum equation_of_state {CLP,EDE};
 
 /** list of possible parametrizations of the varying fundamental constants */
 
-enum varconst_dependence {varconst_none,varconst_instant};
+enum varconst_dependence {varconst_none,varconst_instant,varconst_readfile};
 
 /** list of formats for the vector of background quantities */
 
@@ -126,6 +126,16 @@ struct background
   double varconst_me; /**< electron mass for varying fundamental constants */
   enum varconst_dependence varconst_dep; /**< dependence of the varying fundamental constants as a function of time */
   double varconst_transition_redshift; /**< redshift of transition between varied fundamental constants and normal fundamental constants in the 'varconst_instant' case*/
+
+
+  // read from file varconst
+  FileName varconst_filename; /**< filename for tabulated values of varying fundamental constants */
+  double * varconst_file_logz;
+  double * varconst_file_alpha;
+  double * varconst_file_me;
+  double * varconst_file_alpha_spline;
+  double * varconst_file_me_spline;
+  int varconst_file_z_size;
 
   //@}
 
