@@ -798,8 +798,8 @@ int background_varconst_of_z(
     // interpolate spline
     class_call(array_interpolate_spline(pba->varconst_file_logz,
                                         pba->varconst_file_z_size,
-                                        pba->varconst_file_me,
-                                        pba->varconst_file_me_spline,
+                                        pba->varconst_file_alpha,
+                                        pba->varconst_file_alpha_spline,
                                         1,
                                         logz,
                                         &last_index,
