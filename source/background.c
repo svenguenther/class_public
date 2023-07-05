@@ -890,7 +890,7 @@ int background_init(
     while (fgets(line, sizeof(line), file) != NULL){
       sscanf(line,"%lf %lf %lf",&pba->varconst_file_logz[i],&pba->varconst_file_alpha[i],&pba->varconst_file_me[i]);
       pba->varconst_file_logz[i] = log(1.+pba->varconst_file_logz[i]);
-      printf("z = %e, alpha = %e, me = %e\n",pba->varconst_file_logz[i],pba->varconst_file_alpha[i],pba->varconst_file_me[i]);
+      //printf("z = %e, alpha = %e, me = %e\n",pba->varconst_file_logz[i],pba->varconst_file_alpha[i],pba->varconst_file_me[i]);
       i++;
 
     }
