@@ -857,7 +857,7 @@ int background_init(
   /* - init varconst readfile. Read the file and spline it */
   if (pba->varconst_dep == varconst_readfile){
 
-    printf("Initializing variation of fundamental constants from file %s\n",pba->varconst_filename);
+    //printf("Initializing variation of fundamental constants from file %s\n",pba->varconst_filename);
 
     // read lines from data.txt
     FILE *file;
@@ -875,7 +875,7 @@ int background_init(
       nlines++;
     }
 
-    printf("Found %d lines in file %s\n",nlines,pba->varconst_filename);
+    //printf("Found %d lines in file %s\n",nlines,pba->varconst_filename);
 
     rewind(file);
 
@@ -884,7 +884,7 @@ int background_init(
     class_alloc(pba->varconst_file_me,nlines*sizeof(double),pba->error_message);
     class_alloc(pba->varconst_file_alpha_spline,nlines*sizeof(double),pba->error_message);
     class_alloc(pba->varconst_file_me_spline,nlines*sizeof(double),pba->error_message);
-    printf("Found %d lines in file %s\n",nlines,pba->varconst_filename);
+    //printf("Found %d lines in file %s\n",nlines,pba->varconst_filename);
 
     i = 0;
     while (fgets(line, sizeof(line), file) != NULL){
