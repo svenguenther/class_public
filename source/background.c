@@ -925,7 +925,7 @@ int background_init(
       printf("zmin = %e, zmax = %e\n",zmin,zmax);
     }
 
-    printf("Done initializing variation of fundamental constants from file %s\n",pba->varconst_filename);
+    //printf("Done initializing variation of fundamental constants from file %s\n",pba->varconst_filename);
   }
 
 
