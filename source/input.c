@@ -2230,6 +2230,8 @@ int input_read_parameters_general(struct file_content * pfc,
     break;
   }
 
+
+
   /** 9) Damping scale */
   /* Read */
   class_read_flag_or_deprecated("compute_damping_scale","compute damping scale",pth->compute_damping_scale);
@@ -2249,6 +2251,9 @@ int input_read_parameters_general(struct file_content * pfc,
     else if (strstr(string1,"readfile") != NULL){
       pba->varconst_dep = varconst_readfile;
     }
+    else if (strstr(string1,"list") != NULL){
+      pba->varconst_dep = varconst_list;
+    }
     else{
       class_stop(errmsg,
                  "You specified 'varying_fundamental_constants' as '%s'. It has to be one of {'none','instantaneous'}.",string1);
@@ -2267,6 +2272,11 @@ int input_read_parameters_general(struct file_content * pfc,
   case varconst_readfile:
     class_read_string("varying_constants_file",pba->varconst_filename);
     break;
+  case varconst_list:
+    class_read_int("varying_constants_list_size",pba->varconst_list_size);
+    class_read_list_of_doubles_or_default("varying_constants_z_list",pba->varconst_list_z,0.0, pba->varconst_list_size);
+    class_read_list_of_doubles_or_default("varying_constants_me_list",pba->varconst_list_me,1.0, pba->varconst_list_size);
+    class_read_list_of_doubles_or_default("varying_constants_alpha_list",pba->varconst_list_alpha,1.0, pba->varconst_list_size);
   }
 
 

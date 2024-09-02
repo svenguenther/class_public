@@ -141,7 +141,7 @@
                  name, entries_read_temp, siz);                                 \
     }else{                                                                      \
       class_alloc(destination,siz*sizeof(double),errmsg);                       \
-      for (n=0; n<siz; n++){destination[n] = val_default;}                       \
+      for (int n=0; n<siz; n++){destination[n] = val_default;}                       \
     }                                                                           \
   } while(0);
 

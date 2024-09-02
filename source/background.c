@@ -823,7 +823,37 @@ int background_varconst_of_z(
                 pba->error_message);
     
     break;
+
+  case varconst_list:
+
+    logz = log(1.+z);
+
+    // interpolate spline
+    class_call(array_interpolate_spline(pba->varconst_list_logz,
+                                        pba->varconst_list_size,
+                                        pba->varconst_list_alpha,
+                                        pba->varconst_list_alpha_spline,
+                                        1,
+                                        logz,
+                                        &last_index,
+                                        alpha,
+                                        1,
+                                        pba->error_message),
+               pba->error_message,
+               pba->error_message);
     
+    class_call(array_interpolate_spline(pba->varconst_list_logz,
+                                        pba->varconst_list_size,
+                                        pba->varconst_list_me,
+                                        pba->varconst_list_me_spline,
+                                        1,
+                                        logz,
+                                        &last_index,
+                                        me,
+                                        1,
+                                        pba->error_message),
+                pba->error_message,
+                pba->error_message);    
 
     /* Implement here your arbitrary model of varying fundamental constants! */
   }
@@ -926,6 +956,41 @@ int background_init(
     }
 
     //printf("Done initializing variation of fundamental constants from file %s\n",pba->varconst_filename);
+  }
+
+  /* - init varconst list. Read the list and spline it*/
+  if (pba->varconst_dep == varconst_list){
+    // allocate 
+    class_alloc(pba->varconst_list_logz,pba->varconst_list_size*sizeof(double),pba->error_message);
+    class_alloc(pba->varconst_list_alpha_spline,pba->varconst_list_size*sizeof(double),pba->error_message);
+    class_alloc(pba->varconst_list_me_spline,pba->varconst_list_size*sizeof(double),pba->error_message);
+
+    // fill logz
+    for (int i = 0; i < pba->varconst_list_size; i++){
+      pba->varconst_list_logz[i] = log(1.+pba->varconst_list_z[i]);
+    }
+
+    // spline alpha
+    class_call(array_spline_table_lines(pba->varconst_list_logz,
+                                        pba->varconst_list_size,
+                                        pba->varconst_list_alpha,
+                                        1,
+                                        pba->varconst_list_alpha_spline,
+                                        _SPLINE_EST_DERIV_,
+                                        pba->error_message),
+               pba->error_message,
+               pba->error_message);
+    
+    // spline me
+    class_call(array_spline_table_lines(pba->varconst_list_logz,
+                                        pba->varconst_list_size,
+                                        pba->varconst_list_me,
+                                        1,
+                                        pba->varconst_list_me_spline,
+                                        _SPLINE_EST_DERIV_,
+                                        pba->error_message),
+                pba->error_message,
+                pba->error_message);
   }
 
 

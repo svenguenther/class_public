@@ -21,7 +21,7 @@ enum equation_of_state {CLP,EDE};
 
 /** list of possible parametrizations of the varying fundamental constants */
 
-enum varconst_dependence {varconst_none,varconst_instant,varconst_readfile};
+enum varconst_dependence {varconst_none,varconst_instant,varconst_readfile,varconst_list};
 
 /** list of formats for the vector of background quantities */
 
@@ -136,6 +136,16 @@ struct background
   double * varconst_file_alpha_spline;
   double * varconst_file_me_spline;
   int varconst_file_z_size;
+
+  // read from list
+  int varconst_list_size; /**< size of list of redshifts for varying fundamental constants */
+  double * varconst_list_z;
+  double * varconst_list_logz;
+  double * varconst_list_alpha;
+  double * varconst_list_me;
+  double * varconst_list_alpha_spline;
+  double * varconst_list_me_spline;
+
 
   //@}
 
